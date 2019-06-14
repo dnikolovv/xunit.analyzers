@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -38,6 +39,34 @@ class TestClass
         public async Task FindsWarningForAssertFalseAll()
         {
             var sourceCode = Template("Assert.False(collection.All(x => string.IsNullOrEmpty(x)))");
+            var diagnostics = await CodeAnalyzerHelper.GetDiagnosticsAsync(analyzer, sourceCode);
+
+            Assert.Collection(diagnostics, d =>
+            {
+                Assert.Equal("Do not use Assert.True(...) or Assert.False(...) together with LINQ's All(...). Use Assert.DoesNotContain(...) or Assert.Contains(...) instead.", d.GetMessage());
+                Assert.Equal("xUnit2021", d.Id);
+                Assert.Equal(DiagnosticSeverity.Info, d.Severity);
+            });
+        }
+
+        [Fact]
+        public async Task FindsWarningForAssertTrueAllWithWithOtherLinqCalls()
+        {
+            var sourceCode = Template("Assert.True(collection.Select(x => x + \"a\").Where(x => x == null).All(x => string.IsNullOrEmpty(x)))");
+            var diagnostics = await CodeAnalyzerHelper.GetDiagnosticsAsync(analyzer, sourceCode);
+
+            Assert.Collection(diagnostics, d =>
+            {
+                Assert.Equal("Do not use Assert.True(...) or Assert.False(...) together with LINQ's All(...). Use Assert.DoesNotContain(...) or Assert.Contains(...) instead.", d.GetMessage());
+                Assert.Equal("xUnit2021", d.Id);
+                Assert.Equal(DiagnosticSeverity.Info, d.Severity);
+            });
+        }
+
+        [Fact]
+        public async Task FindsWarningForAssertFalseAllWithOtherLinqCalls()
+        {
+            var sourceCode = Template("Assert.False(collection.Select(x => x + \"a\").Where(x => x == null).All(x => string.IsNullOrEmpty(x)))");
             var diagnostics = await CodeAnalyzerHelper.GetDiagnosticsAsync(analyzer, sourceCode);
 
             Assert.Collection(diagnostics, d =>

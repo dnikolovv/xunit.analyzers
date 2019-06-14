@@ -236,11 +236,13 @@ namespace Xunit.Analyzers
 
         internal static DiagnosticDescriptor X2019_AssertThrowsShouldNotBeUsedForAsyncThrowsCheck { get; } =
             Rule("xUnit2019", "Do not use obsolete throws check to check for asynchronously thrown exception", Assertions, Hidden,
-            "Do not use obsolete {0} to check for asynchronously thrown exceptions.");
+                "Do not use obsolete {0} to check for asynchronously thrown exceptions.");
 
         // Placeholder for rule X2020
 
-        // Placeholder for rule X2021
+        internal static DiagnosticDescriptor X2021_AssertTrueOrFalseWithLinqAllShouldBeConvertedToDoesNotContainOrContains { get; } =
+            Rule("xUnit2021", "Do not use Assert.True(...) or Assert.False(...) together with LINQ's All(...).", Assertions, Info,
+                "Do not use Assert.True(...) or Assert.False(...) together with LINQ's All(...). Use Assert.DoesNotContain(...) or Assert.Contains(...) instead.");
 
         // Placeholder for rule X2022
 
